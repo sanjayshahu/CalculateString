@@ -34,7 +34,7 @@ const CalculateString= () => {
                 type="text"
                 value={inputString}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Input"
+                placeholder="InputString"
                 style={{ width: '100%', padding: '10px', marginBottom: '10px' }}
             />
             <button onClick={stringCalculator} style={{ padding: '10px', width: '100%', marginBottom: '10px'}}>
