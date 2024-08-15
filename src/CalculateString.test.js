@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen} from '@testing-library/react';
+import { render, screen,fireEvent} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import CalculateString from './CalculateString';
 
@@ -18,34 +18,44 @@ describe('String Calculator', () => {
         expect(screen.getByText(/output: 0/i)).toBeInTheDocument();
     });
 
-    test('calculates sum for input "2,3,4"', () => {
+    test('calculates sum for input "2,3,4"', async () => {
+        userEvent.setup()
         render(<CalculateString />);
-        userEvent.type(screen.getByPlaceholderText(/inputString/i), { target: { value: '2,3,4' } });
+        const inputElement = screen.getByPlaceholderText(/inputString/i);
+    
+        await userEvent.type(inputElement, '2,3,4');
         userEvent.click(screen.getByText(/calculatestring/i));
-        expect(screen.getByText(/output: 9/i)).toBeInTheDocument();
+    
+        // Find the output element once it appears in the DOM
+        const outputElement = await screen.findByText(/output: 9/i);
+        expect(outputElement).toBeInTheDocument();
     });
     test('handles newline as a delimiter', async () => {
+        userEvent.setup()
         render(<CalculateString />);
-        const input = screen.getByPlaceholderText(/inputString/i);
-        const button = screen.getByText(/calculatestring/i);
-
-        await userEvent.type(input, '1\n2,3');
-        await userEvent.click(button);
-
-        expect(screen.getByText(/result: 6/i)).toBeInTheDocument();
+        const inputElement = screen.getByPlaceholderText(/inputString/i);
+    
+        await userEvent.type(inputElement, '1\n2\n3');
+        userEvent.click(screen.getByText(/calculatestring/i));
+    
+        // Find the output element once it appears in the DOM
+        const headingElement = await screen.findByRole('heading', { level: 3 });
+        expect(headingElement).toHaveTextContent(/output: 6/i)
     });
-
+    
     test('supports custom delimiter', async () => {
+        userEvent.setup()
         render(<CalculateString />);
-        const input = screen.getByPlaceholderText(/inputString/i);
-        const button = screen.getByText(/calculatestring/i);
-
-        await userEvent.type(input, '//;\n1;2');
-        await userEvent.click(button);
-
-        expect(screen.getByText(/result: 3/i)).toBeInTheDocument();
+        const inputElement = screen.getByPlaceholderText(/inputString/i);
+        await userEvent.type(inputElement, '//;\n1;2');        
+        userEvent.click(screen.getByText(/calculatestring/i));
+    
+        // Find the output element once it appears in the DOM
+        const headingElement = await screen.findByRole('heading', { level: 3 });
+        expect(headingElement).toHaveTextContent(/output: 3/i)
+      
     });
-
+    
     test('throws an error for negative numbers', async () => {
         render(<CalculateString />);
         const input = screen.getByPlaceholderText(/inputString/i);

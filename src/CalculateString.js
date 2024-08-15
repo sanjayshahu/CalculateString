@@ -8,14 +8,45 @@ const CalculateString= () => {
         if (numbers.trim() === "") {
             return 0;
         }
-
-        const numArray = numbers.split(",");
-
-      
-
+    
+        let delimiter = ",";
+        let numbersSection =  numbers.replace(/\\n/g, '\n');
+    
+    
+        // Handle custom delimiter syntax
+        if ( numbersSection.startsWith("//")) {
+            let delimiterEndIndex = numbersSection.indexOf("\n");
+            
+            // Check for Windows-style newlines 
+            if (delimiterEndIndex === -1) {
+                delimiterEndIndex = numbers.indexOf("\r\n");
+            }
+    
+            if (delimiterEndIndex !== -1) {
+                delimiter = numbers.substring(2, delimiterEndIndex);
+            } else {
+                throw new Error("Invalid input format: newline after delimiter definition is missing.");
+            }
+        }
+    
+        
+        const sanitizedNumbers = numbersSection.replace(new RegExp(`[${delimiter}\n\r]`, 'g'), delimiter);
+    
+        const numArray = sanitizedNumbers.split(delimiter);
+    
+        const negatives = numArray.filter(num => parseInt(num.trim(), 10) < 0);
+        if (negatives.length > 0) {
+            throw new Error(`Negative numbers not allowed: ${negatives.join(", ")}`);
+        }
+    
         return numArray.reduce((acc, curr) => {
-            return acc + parseInt(curr.trim(), 10);
+            const parsedValue = parseInt(curr.trim(), 10);
+            if (!isNaN(parsedValue) && Number.isInteger(parsedValue)) {
+                return acc + parsedValue;
+            }
+            return acc;
         }, 0);
+     
     };
 
     const stringCalculator = () => {
