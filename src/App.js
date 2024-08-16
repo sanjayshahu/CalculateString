@@ -1,14 +1,11 @@
-
-import './App.css';
-import CalculateString from './CalculateString';
-
-
+import "./App.css";
+import CalculateString from "./CalculateString";
 
 function App() {
   return (
     <div className="App">
       <h1>Incubyte Assessment</h1>
-      <CalculateString/>         
+      <CalculateString />
     </div>
   );
 }
